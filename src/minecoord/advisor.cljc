@@ -17,7 +17,8 @@
   A proposal: {:op :log-work-record|:schedule-crew-operation|
                :flag-safety-concern|:coordinate-supply-order
                :effect :propose :site-id str :miner-id str? :cost
-               number? :stake kw :confidence n :rationale str}")
+               number? :stake kw :confidence n :rationale str}"
+  (:require [clojure.edn :as edn]))
 
 (defprotocol Advisor
   (-advise [advisor store request] "request -> proposal map"))
@@ -64,7 +65,7 @@
 
 (defn- parse-proposal [content]
   (try
-    (let [p (read-string content)]
+    (let [p (edn/read-string content)]
       (if (map? p)
         (assoc p :effect :propose)
         {:op :unknown :effect :propose :confidence 0.0 :stake :high
