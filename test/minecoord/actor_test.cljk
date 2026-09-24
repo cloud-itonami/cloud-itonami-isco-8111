@@ -1,5 +1,5 @@
 (ns minecoord.actor-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [minecoord.actor :as actor]
             [minecoord.store :as store]))
 
