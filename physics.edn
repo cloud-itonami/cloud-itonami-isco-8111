@@ -1,0 +1,35 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:physics` runs it.
+;;
+;; README "Robotics premise": a mine/quarry-site scheduling/logistics
+;; coordination robot logs extraction and progress, proposes crew/shift
+;; schedules, surfaces safety concerns and coordinates mining-equipment and
+;; consumables orders; it never mines. Its physical work is underground
+;; logistics: taking consumables down a decline, and the dewatering duty that
+;; the shift schedule depends on (the sump pump lifting water to surface).
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isco-8111"
+ :cases
+ [{:id :consumables-up-decline
+   :kind :transport
+   :procedure "utility carrier drives a pallet of consumables (rock bolts, mesh, cartridges of resin) up the decline to the face"
+   :params {:mass-kg 800.0 :payload-kg 600.0 :distance-m 400.0 :v-max-mps 2.0 :a-max-mps2 0.3
+            :brake-decel-mps2 1.5 :drive-force-n 3000.0 :crr 0.04
+            :cog-height-m 0.70 :support-half-length-m 0.90
+            :max-time-s 3600.0}
+   :sweep {:param :slope-deg :values [0.0 4.0 8.0 10.0 12.0]}
+   :quantity :cycle-time-s
+   :limit {:max 300.0 :basis "estimate: one decline trip within a 5-minute slot of the shift's materials schedule"}
+   :boundary {:lo 0.0 :hi 15.0}}
+  {:id :sump-dewatering-line
+   :kind :pipe-flow
+   :procedure "sump pump lifts mine water 100 m through a 100 mm steel rising main to surface"
+   :params {:diameter-m 0.10 :length-m 400.0 :roughness-m 4.5e-5 :density-kg-m3 1000.0
+            :viscosity-pa-s 1.0e-3 :pump-efficiency 0.65 :elevation-m 100.0}
+   :sweep {:param :q-m3s :values [0.005 0.01 0.02 0.025 0.03]}
+   :quantity :pump-power-w
+   :limit {:max 55000.0 :basis "estimate: rated shaft power of the installed sump pump (55 kW class)"}
+   :boundary {:lo 0.002 :hi 0.05}}]}
